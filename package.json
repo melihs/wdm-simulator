@@ -1,7 +1,25 @@
 {
-  "name": "optik",
+  "name": "wdm-simulator",
+    "description": "A WDM (Wavelength Division Multiplexing) based optical communication link simulator. Change parameters interactively and analyse the outputs in real time.",
   "version": "0.1.0",
   "private": true,
+   "keywords": [
+    "wdm",
+    "simulator",
+    "optical communication",
+    "plotly",
+    "react",
+    "tailwindcss"
+  ],
+  "author": {
+    "name": "Melih Şahin",
+    "email": "melihsahin24@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/melihs/wdm-simulator.git"
+  },
+  "homepage": "wdm-simulator.netlify.app",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
