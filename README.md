@@ -18,9 +18,13 @@ npm run build      # production derleme
 
 ## Kullanım
 Sol paneldeki sliderlarla parametreleri değiştirin (bit hızı, kanal sayısı, fiber uzunluğu,
-   EDFA kazancı, filtre bant genişliği vb.). Tüm grafikler anlık güncellenir.
+EDFA kazancı, filtre bant genişliği vb.). Tüm grafikler anlık güncellenir.
+
+Header'daki **🇬🇧 EN / 🇹🇷 TR** butonuyla arayüz dili anında değiştirilebilir.
 
 ## Mimari
+- `lib/i18n.ts` — Türkçe/İngilizce çeviri stringleri
+- `lib/langContext.tsx` — `LangProvider` ve `useLang()` hook'u
 - `lib/` — saf TypeScript fizik/DSP modülleri (modülasyon, WDM, fiber, EDFA, filtre, BER) ve
   `simulation.ts` üst seviye toplayıcı.
 - `components/` — parametre paneli, blok şeması (SVG) ve Plotly tabanlı grafik görünümleri.
@@ -50,7 +54,11 @@ npm run build      # production build
 ## Usage
 Adjust the sliders in the left panel (bit rate, number of channels, fibre length, EDFA gain, filter bandwidth, etc.). All charts update instantly.
 
+Use the **🇬🇧 EN / 🇹🇷 TR** button in the header to switch the interface language instantly.
+
 ## Architecture
+- `lib/i18n.ts` — Turkish/English translation strings
+- `lib/langContext.tsx` — `LangProvider` and `useLang()` hook
 - `lib/` — pure TypeScript physics/DSP modules (modulation, WDM, fibre, EDFA, filter, BER) and `simulation.ts` top-level aggregator.
 - `components/` — parameter panel, SVG block diagram, and Plotly-based chart views.
 

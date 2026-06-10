@@ -3,12 +3,15 @@
 import type { Data } from "plotly.js";
 import Plot from "./Plot";
 import { FilterResult } from "@/lib/filter";
+import { useLang } from "@/lib/langContext";
 
 interface Props {
   filter: FilterResult;
 }
 
 export default function FilterView({ filter }: Props) {
+  const { t } = useLang();
+
   const data: Data[] = [
     {
       x: filter.freqTHz,
@@ -18,7 +21,7 @@ export default function FilterView({ filter }: Props) {
       line: { color: "#9333ea", width: 2 },
       fill: "tozeroy",
       fillcolor: "rgba(147,51,234,0.07)",
-      name: "DEMUX filtre yanıtı",
+      name: t.demuxFilterTrace,
     },
   ];
 
@@ -28,7 +31,7 @@ export default function FilterView({ filter }: Props) {
         data={data}
         height={280}
         layout={{
-          xaxis: { title: { text: "Frekans (THz)" } },
+          xaxis: { title: { text: t.freqAxis } },
           yaxis: { title: { text: "|H(f)|² (dB)" }, range: [-50, 3] },
           shapes: [
             {
@@ -53,8 +56,7 @@ export default function FilterView({ filter }: Props) {
         }}
       />
       <p className="mt-2 text-center text-xs text-slate-500">
-        Seçili kanal <strong>{filter.selectedLabel}</strong> · komşu kanal bastırması{" "}
-        <strong>{filter.adjacentSuppressionDb} dB</strong>
+        {t.filterFooter(filter.selectedLabel, filter.adjacentSuppressionDb)}
       </p>
     </div>
   );

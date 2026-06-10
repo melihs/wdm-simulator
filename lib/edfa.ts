@@ -33,29 +33,26 @@ export function analyzeEdfa(cfg: SystemConfig, fiber: FiberResult): EdfaResult {
   };
 }
 
+export type LinkBudgetKey = "tx" | "fiber_out" | "edfa_out";
+
 export interface LinkBudgetRow {
-  stage: string;
+  key: LinkBudgetKey;
   powerDbm: number;
-  note: string;
+  fiberLengthKm: number;
+  lossDb: number;
+  gainDb: number;
+  nfDb: number;
 }
 
-/** Verici -> fiber -> EDFA boyunca güç bütçesi tablosu */
+/** Verici -> fiber -> EDFA boyunca güç bütçesi (string'siz; bileşen çevirir). */
 export function buildLinkBudget(
   cfg: SystemConfig,
   fiber: FiberResult,
   edfa: EdfaResult
 ): LinkBudgetRow[] {
   return [
-    { stage: "Verici (kanal başı)", powerDbm: cfg.txPowerDbm, note: "TX çıkışı" },
-    {
-      stage: `Fiber çıkışı (${cfg.fiberLengthKm} km)`,
-      powerDbm: fiber.outputPowerDbm,
-      note: `−${fiber.totalLossDb} dB zayıflama`,
-    },
-    {
-      stage: "EDFA çıkışı",
-      powerDbm: edfa.outputPowerDbm,
-      note: `+${cfg.edfaGainDb} dB kazanç, NF=${cfg.edfaNfDb} dB`,
-    },
+    { key: "tx",        powerDbm: cfg.txPowerDbm,       fiberLengthKm: cfg.fiberLengthKm, lossDb: fiber.totalLossDb, gainDb: cfg.edfaGainDb, nfDb: cfg.edfaNfDb },
+    { key: "fiber_out", powerDbm: fiber.outputPowerDbm,  fiberLengthKm: cfg.fiberLengthKm, lossDb: fiber.totalLossDb, gainDb: cfg.edfaGainDb, nfDb: cfg.edfaNfDb },
+    { key: "edfa_out",  powerDbm: edfa.outputPowerDbm,   fiberLengthKm: cfg.fiberLengthKm, lossDb: fiber.totalLossDb, gainDb: cfg.edfaGainDb, nfDb: cfg.edfaNfDb },
   ];
 }

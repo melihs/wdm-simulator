@@ -3,6 +3,7 @@
 import type { Data } from "plotly.js";
 import Plot from "./Plot";
 import { Spectrum, WdmChannel } from "@/lib/wdm";
+import { useLang } from "@/lib/langContext";
 
 interface Props {
   spectrum: Spectrum;
@@ -10,6 +11,8 @@ interface Props {
 }
 
 export default function SpectrumView({ spectrum, channels }: Props) {
+  const { t } = useLang();
+
   const data: Data[] = [
     {
       x: spectrum.freqTHz,
@@ -19,11 +22,10 @@ export default function SpectrumView({ spectrum, channels }: Props) {
       line: { color: "#0891b2", width: 2 },
       fill: "tozeroy",
       fillcolor: "rgba(8,145,178,0.08)",
-      name: "Bileşik spektrum",
+      name: t.compositeSpectrum,
     },
   ];
 
-  // Kanal merkez işaretleri
   const annotations = channels.map((ch) => ({
     x: ch.freqTHz,
     y: 2,
@@ -39,14 +41,17 @@ export default function SpectrumView({ spectrum, channels }: Props) {
         data={data}
         height={300}
         layout={{
-          xaxis: { title: { text: "Frekans (THz)" } },
-          yaxis: { title: { text: "Güç (dB)" }, range: [-46, 8] },
+          xaxis: { title: { text: t.freqAxis } },
+          yaxis: { title: { text: t.powerAxis }, range: [-46, 8] },
           annotations,
         }}
       />
       <p className="mt-2 text-center text-xs text-slate-500">
-        {channels.length} kanal · {channels[0]?.wavelengthNm}–
-        {channels[channels.length - 1]?.wavelengthNm} nm aralığı
+        {t.spectrumFooter(
+          channels.length,
+          channels[0]?.wavelengthNm,
+          channels[channels.length - 1]?.wavelengthNm
+        )}
       </p>
     </div>
   );
