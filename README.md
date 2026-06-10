@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WDM Optik Haberleşme Sistemi — İnteraktif Simülasyon
 
-## Getting Started
+Dalga boyu bölmeli çoğullama (WDM) temelli bir optik haberleşme linki tasarlar, parametreleri
+interaktif olarak değiştirip çıktıları anlık analiz eder.
 
-First, run the development server:
+## İçerdiği yapılar
+- **Modülasyon** (verici, NRZ/RZ-OOK) — *ana yapı*
+- **Çoğullama** (WDM MUX, ITU-T grid) — *ana yapı*
+- **Kuvvetlendirme** (EDFA, OSNR/güç bütçesi) — destekleyici
+- **Filtreleme** (DEMUX süper-Gauss optik filtre) — destekleyici
 
+## Çalıştırma
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install        # bağımlılıklar (kurulu)
+npm run dev        # http://localhost:3000
+npm run build      # production derleme
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Kullanım
+Sol paneldeki sliderlarla parametreleri değiştirin (bit hızı, kanal sayısı, fiber uzunluğu,
+   EDFA kazancı, filtre bant genişliği vb.). Tüm grafikler anlık güncellenir.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Mimari
+- `lib/` — saf TypeScript fizik/DSP modülleri (modülasyon, WDM, fiber, EDFA, filtre, BER) ve
+  `simulation.ts` üst seviye toplayıcı.
+- `components/` — parametre paneli, blok şeması (SVG) ve Plotly tabanlı grafik görünümleri.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+> Not: Modeller mühendislik düzeyinde yaklaşımlardır (örn. tek aşama EDFA OSNR ≈ 58 + Pin − NF;
+> BER = ½·erfc(Q/√2)) ve eğitim amaçlıdır.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+# WDM Optical Communication System — Interactive Simulation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+A WDM (Wavelength Division Multiplexing) based optical communication link simulator. Change parameters interactively and analyse the outputs in real time.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Included building blocks
+- **Modulation** (transmitter, NRZ/RZ-OOK) — *primary*
+- **Multiplexing** (WDM MUX, ITU-T grid) — *primary*
+- **Amplification** (EDFA, OSNR / power budget) — supporting
+- **Filtering** (DEMUX super-Gaussian optical filter) — supporting
 
-## Deploy on Vercel
+## Getting started
+```bash
+npm install        # install dependencies
+npm run dev        # http://localhost:3000
+npm run build      # production build
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Usage
+Adjust the sliders in the left panel (bit rate, number of channels, fibre length, EDFA gain, filter bandwidth, etc.). All charts update instantly.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Architecture
+- `lib/` — pure TypeScript physics/DSP modules (modulation, WDM, fibre, EDFA, filter, BER) and `simulation.ts` top-level aggregator.
+- `components/` — parameter panel, SVG block diagram, and Plotly-based chart views.
+
+> Note: Models are engineering-level approximations (e.g. single-stage EDFA OSNR ≈ 58 + P_in − NF; BER = ½·erfc(Q/√2)) and are intended for educational use.

@@ -1,65 +1,93 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useMemo, useState } from "react";
+import { DEFAULT_CONFIG, SystemConfig } from "@/lib/config";
+import { runSimulation } from "@/lib/simulation";
+import ParameterPanel from "@/components/ParameterPanel";
+import Section from "@/components/Section";
+import BlockDiagram from "@/components/BlockDiagram";
+import ModulationView from "@/components/ModulationView";
+import SpectrumView from "@/components/SpectrumView";
+import EdfaLinkView from "@/components/EdfaLinkView";
+import FilterView from "@/components/FilterView";
+import PerformanceView from "@/components/PerformanceView";
+
+export default function Page() {
+  const [cfg, setCfg] = useState<SystemConfig>(DEFAULT_CONFIG);
+  const sim = useMemo(() => runSimulation(cfg), [cfg]);
+
+  const onChange = (patch: Partial<SystemConfig>) =>
+    setCfg((c) => ({ ...c, ...patch }));
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <div className="mx-auto max-w-[1400px] px-4 py-6 lg:px-8">
+      {/* Başlık */}
+      <header className="mb-6 rounded-xl bg-gradient-to-r from-slate-800 to-sky-900 px-6 py-5 text-white shadow">
+        <h1 className="text-xl font-bold lg:text-2xl">
+          WDM Optik Haberleşme Sistemi — İnteraktif Simülasyon
+        </h1>
+      </header>
+
+      <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
+        {/* Sol panel: parametreler */}
+        <aside className="lg:sticky lg:top-6 lg:self-start">
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <ParameterPanel
+              cfg={cfg}
+              onChange={onChange}
+              onReset={() => setCfg(DEFAULT_CONFIG)}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          </div>
+        </aside>
+
+        {/* Sağ içerik */}
+        <main className="space-y-6">
+          <Section
+            title="Sistem Blok Şeması"
+            subtitle="Verici → WDM MUX → Fiber → EDFA → DEMUX → Alıcı"
+            badge="Tasarım"
           >
-            Documentation
-          </a>
-        </div>
-      </main>
+            <BlockDiagram numChannels={cfg.numChannels} fiberLengthKm={cfg.fiberLengthKm} />
+          </Section>
+
+          <Section
+            title="1 · Modülasyon"
+            subtitle={`${cfg.modulation} · ${cfg.bitRateGbps} Gb/s — dalga formu ve göz diyagramı`}
+            badge="Ana yapı"
+          >
+            <ModulationView mod={sim.modulation} eye={sim.eye} />
+          </Section>
+
+          <Section
+            title="2 · WDM Çoğullama"
+            subtitle={`${cfg.numChannels} kanal · ${cfg.channelSpacingGHz} GHz aralık — bileşik spektrum`}
+            badge="Ana yapı"
+          >
+            <SpectrumView spectrum={sim.spectrum} channels={sim.channels} />
+          </Section>
+
+          <Section
+            title="3 · Kuvvetlendirme (EDFA)"
+            subtitle="Güç bütçesi ve OSNR analizi"
+          >
+            <EdfaLinkView linkBudget={sim.linkBudget} edfa={sim.edfa} />
+          </Section>
+
+          <Section
+            title="4 · Filtreleme (DEMUX)"
+            subtitle={`Süper-Gauss optik filtre · ${cfg.filterBandwidthGHz} GHz`}
+          >
+            <FilterView filter={sim.filter} />
+          </Section>
+
+          <Section
+            title="5 · Performans Analizi"
+            subtitle="OSNR → Q-faktör → BER"
+          >
+            <PerformanceView perf={sim.performance} />
+          </Section>
+        </main>
+      </div>
     </div>
   );
 }
